@@ -1,0 +1,332 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workflows_notifylucy_name": {
+            "defaultValue": "notifylucy",
+            "type": "String"
+        },
+        "connections_gmail_externalid": {
+            "defaultValue": "/subscriptions/8979ad9c-c8d1-4f76-a01f-31af5e7fe766/resourceGroups/NotifyLucy-RG/providers/Microsoft.Web/connections/gmail",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "[parameters('workflows_notifylucy_name')]",
+            "location": "eastus",
+            "properties": {
+                "state": "Enabled",
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "Recurrence": {
+                            "recurrence": {
+                                "frequency": "Month",
+                                "interval": 12,
+                                "startTime": "2019-12-03T08:00:00",
+                                "timeZone": "India Standard Time"
+                            },
+                            "type": "Recurrence"
+                        }
+                    },
+                    "actions": {
+                        "Delay": {
+                            "runAfter": {
+                                "Remind:_relight_the_candles": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Wait",
+                            "inputs": {
+                                "interval": {
+                                    "count": 5,
+                                    "unit": "Minute"
+                                }
+                            }
+                        },
+                        "Delay_1_Minute": {
+                            "runAfter": {
+                                "Remind:_return_to_kitchen,_fill_two_more_cups": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Wait",
+                            "inputs": {
+                                "interval": {
+                                    "count": 1,
+                                    "unit": "Minute"
+                                }
+                            }
+                        },
+                        "Delay_2": {
+                            "runAfter": {
+                                "Remind:_Deliver_coffee_to_Bro_Sis": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Wait",
+                            "inputs": {
+                                "interval": {
+                                    "count": 4,
+                                    "unit": "Minute"
+                                }
+                            }
+                        },
+                        "Delay_4_Minutes": {
+                            "runAfter": {
+                                "Remind:_deliver_the_coffee_to_Mom_and_Dad": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Wait",
+                            "inputs": {
+                                "interval": {
+                                    "count": 4,
+                                    "unit": "Minute"
+                                }
+                            },
+                            "description": "Return Lit"
+                        },
+                        "Delay_5_minutes": {
+                            "runAfter": {
+                                "Remind:_light_the_candles": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Wait",
+                            "inputs": {
+                                "interval": {
+                                    "count": 5,
+                                    "unit": "Minute"
+                                }
+                            }
+                        },
+                        "Remind:_Deliver_coffee_to_Bro_Sis": {
+                            "runAfter": {
+                                "Delay": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "body": {
+                                    "Body": "<p>deliver the coffee to Sister and Brother</p>",
+                                    "Subject": "deliver the coffee to Sister and Brother",
+                                    "To": "mail2manix@gmail.com"
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['gmail']['connectionId']"
+                                    }
+                                },
+                                "method": "post",
+                                "path": "/v2/Mail"
+                            }
+                        },
+                        "Remind:_deliver_the_coffee_to_Mom_and_Dad": {
+                            "runAfter": {
+                                "Delay_5_minutes": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "body": {
+                                    "Body": "<p>deliver the coffee to Mom and Dad</p>",
+                                    "Subject": "deliver the coffee to Mom and Dad",
+                                    "To": "mail2manix@gmail.com"
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['gmail']['connectionId']"
+                                    }
+                                },
+                                "method": "post",
+                                "path": "/v2/Mail"
+                            }
+                        },
+                        "Remind:_light_the_candles": {
+                            "runAfter": {
+                                "Wait_for_5_Minutes": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "body": {
+                                    "Body": "<p>light the candles</p>",
+                                    "Subject": "light the candles",
+                                    "To": "mail2manix@gmail.com"
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['gmail']['connectionId']"
+                                    }
+                                },
+                                "method": "post",
+                                "path": "/v2/Mail"
+                            }
+                        },
+                        "Remind:_pour_two_cups": {
+                            "runAfter": {
+                                "Wait_for_25_Minutes": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "body": {
+                                    "Body": "<p>pour two cups</p>",
+                                    "Subject": "pour two cups",
+                                    "To": "mail2manix@gmail.com"
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['gmail']['connectionId']"
+                                    }
+                                },
+                                "method": "post",
+                                "path": "/v2/Mail"
+                            }
+                        },
+                        "Remind:_relight_the_candles": {
+                            "runAfter": {
+                                "Delay_1_Minute": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "body": {
+                                    "Body": "<p>relight the candles</p>",
+                                    "Subject": "relight the candles",
+                                    "To": "mail2manix@gmail.com"
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['gmail']['connectionId']"
+                                    }
+                                },
+                                "method": "post",
+                                "path": "/v2/Mail"
+                            }
+                        },
+                        "Remind:_return_to_kitchen,_fill_two_more_cups": {
+                            "runAfter": {
+                                "Delay_4_Minutes": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "body": {
+                                    "Body": "<p>return to kitchen, fill two more cups</p>",
+                                    "Subject": "return to kitchen, fill two more cups",
+                                    "To": "mail2manix@gmail.com"
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['gmail']['connectionId']"
+                                    }
+                                },
+                                "method": "post",
+                                "path": "/v2/Mail"
+                            }
+                        },
+                        "Remind:_start_the_coffee,_set_out_4_cups": {
+                            "runAfter": {},
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "body": {
+                                    "Body": "<p>start the coffee, set out 4 cups</p>",
+                                    "Subject": "start the coffee, set out 4 cups",
+                                    "To": "mail2manix@gmail.com"
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['gmail']['connectionId']"
+                                    }
+                                },
+                                "method": "post",
+                                "path": "/v2/Mail"
+                            }
+                        },
+                        "Send_email_(V2)": {
+                            "runAfter": {
+                                "Delay_2": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "body": {
+                                    "Body": "<p>return to kitchen, take a break!</p>",
+                                    "Subject": "return to kitchen, take a break!",
+                                    "To": "mail2manix@gmail.com"
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['gmail']['connectionId']"
+                                    }
+                                },
+                                "method": "post",
+                                "path": "/v2/Mail"
+                            }
+                        },
+                        "Wait_for_25_Minutes": {
+                            "runAfter": {
+                                "Remind:_start_the_coffee,_set_out_4_cups": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Wait",
+                            "inputs": {
+                                "interval": {
+                                    "count": 25,
+                                    "unit": "Minute"
+                                }
+                            }
+                        },
+                        "Wait_for_5_Minutes": {
+                            "runAfter": {
+                                "Remind:_pour_two_cups": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Wait",
+                            "inputs": {
+                                "interval": {
+                                    "count": 5,
+                                    "unit": "Minute"
+                                }
+                            }
+                        }
+                    },
+                    "outputs": {}
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "gmail": {
+                                "connectionId": "[parameters('connections_gmail_externalid')]",
+                                "connectionName": "gmail",
+                                "id": "/subscriptions/8979ad9c-c8d1-4f76-a01f-31af5e7fe766/providers/Microsoft.Web/locations/eastus/managedApis/gmail"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}
